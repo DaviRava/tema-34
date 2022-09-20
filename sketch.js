@@ -3,13 +3,22 @@ const World = Matter.World;
 const Bodies = Matter.Bodies;
 const Body = Matter.Body;
 
+var cachorro, cachorroIMG;
+var explosao, explosaoIMG;
+
 
 var matrizball = []
 
 
+function preload() {
+  cachorroIMG = loadImage("./cachorro.png")
+  explosaoIMG = loadImage("./explosao.png")
+
+
+}
 
 function setup() {
-  createCanvas(800,500);
+  createCanvas(windowWidth,500);
 
   engine = Engine.create();
   world = engine.world;
@@ -23,15 +32,34 @@ function setup() {
   ground = Bodies.rectangle(0, height - 1, width * 2, 1, options);
   World.add(world, ground);
 
-  cannon = new Cannon(180, 110, 130, 100, angle)
+  cannon = new Cannon(180, 435.15412, 130, 100, angle)
+
+  cachorro = Bodies.rectangle(width/2 +400, 440, 60, 60, options);
+
+  explosao = Bodies.rectangle(width/2 +400, 440, 60, 60, options);
+
+
+  /*cachorro = createImg("./cachorro.png")
+  cachorro.position(width/2 + 400, 440)
+  cachorro.size(60, 60)*/
+
+  /*explosao = createImg("./explosao.png")
+  explosao.position(width/2 + 400, 440)
+  explosao.size(60, 60)*/
+  
+
+
+
   
 }
 
 
-function draw() 
-{
+function draw() {
   background("black");
   Engine.update(engine)
+
+  rect(ground.position.x, ground.position.y, width * 2, 1)
+  image(cachorroIMG, cachorro.position.x, cachorro.position.y, 60, 60)
 
   for (let i = 0; i < matrizball.length; i++) {
     exibir(matrizball[i], i);
@@ -40,12 +68,9 @@ function draw()
   }
 
   cannon.show()
+  collider()
 
-  for(let i = 0; i < matrizball.length; i++){
-  if (collide(matrizball[i], cachorro) == true) {
-    //colocar explozao
-  }
-}
+  
 }
 
 function keyReleased(){
@@ -67,22 +92,21 @@ function exibir(ball,index){
   if (ball) {
     ball.show()
     ball.animate()
-    if (ball.body.position.x >= width || ball.body.position.y >= height-50) {
-      if (!ball.sink) {
-        ball.remove(index)
-        soundwatter.play()
-        soundwatter.setVolume(0.05)
-      }
-    }
+    //acrescentar o sumisso do osso
+
   }
 
 }
 
-function collider(body, sprite) {
-  if (body !== null) {
-    var distancia = dist(body.position.x, body.position.y, sprite.position.x, sprite.position.y)
-
-    if (distancia <= 80) {
+function collider() {
+  if (this.cachorro !== null) {
+    //var distancia = dist(body, body, sprite, sprite)
+    for (var i = 0; i< matrizball.length; i++){
+    var distancia = Matter.SAT.collides(this.cachorro, matrizball[i].body)
+    console.log(distancia)
+    if (distancia.collided) {
+      cachorro = null
+      image(explosaoIMG, explosao.position.x, explosao.position.y, 60, 60)
       return true
 
     }
@@ -90,7 +114,9 @@ function collider(body, sprite) {
     else {
       return false
     }
+    
   }
+}
 
 }
 

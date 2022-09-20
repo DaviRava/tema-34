@@ -10,7 +10,7 @@ class Cannon {
   }
 
   show(){
-    image(this.base, 70, 20, 200, 200)
+    image(this.base, 70, 340, 200, 200)
     push()
     translate(this.x, this.y)
     rotate(this.angle)
